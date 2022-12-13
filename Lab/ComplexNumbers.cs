@@ -5,49 +5,52 @@ namespace Lab
     {
         private double _re;
         private double _im;
-        private double _mod;
-        private double _arg;
-
-        public ComplexNumbers(){}
-
-        public ComplexNumbers(double a)
-        {
-            Re = a;
-            _mod = Math.Sqrt(Re * Re);
-            _arg = Math.Acos(Re / Mod);
-        }
-        public ComplexNumbers(double a, double b)
-        {
-            Re = a;
-            Im = b;
-            _mod = Math.Sqrt(Re * Re + Im * Im);
-            _arg = Math.Acos(Re / Mod);
-        }
-
+        
         public double Re
         {
             get { return _re; }
-            set { _re = value;
-                _mod = Math.Sqrt(Re * Re + Im * Im);
-                _arg = Math.Acos(Re / Mod); }
+            init { _re = value; }
         }
-
+        
         public double Im
         {
             get { return _im; }
-            set { _im = value;
-                _mod = Math.Sqrt(Re * Re + Im * Im);
-                _arg = Math.Acos(Re / Mod); }
+            init { _im = value;}
         }
 
-        public double Mod => _mod;
-        public double Arg => _arg;
-
-        public void Print()
+        public double Mod
         {
-            Console.WriteLine(Im >= 0 ? $"{Re} + {Math.Abs(Im)}i" : $"{Re} - {Math.Abs(Im)}i");
+            get { return Math.Sqrt(Re * Re + Im * Im); }
+        }
+        
+        public double Arg
+        {
+            get { return Math.Atan2(Im , Re); }
+        }
+        private ComplexNumbers(double a, double b)
+        {
+            Re = a;
+            Im = b;
         }
 
+        public static ComplexNumbers AlgForm(double re, double im)
+        {
+            return new ComplexNumbers(re, im);
+        }
+
+        public static ComplexNumbers TrigForm(double mod, double arg)
+        {
+            var re = mod * Math.Cos(arg);
+            var im = mod * Math.Sin(arg);
+            return new ComplexNumbers(re, im);
+        }
+        
+        public override string ToString()
+        {
+            if (Im > 0) return $"{{Re}} + {Im}i";
+            if (Im < 0) return $"{Re} - {-Im}i";
+            return Re.ToString();
+        }
         public static ComplexNumbers operator +(ComplexNumbers a, ComplexNumbers b)
         {
             double reRes = a.Re + b.Re;
@@ -59,24 +62,6 @@ namespace Lab
         {
             double reRes = a.Re - b.Re;
             double imRes = a.Im - b.Im;
-            return new ComplexNumbers(reRes, imRes);
-        }
-
-        public static ComplexNumbers operator *(ComplexNumbers a, ComplexNumbers b)
-        {
-            double reRes = a.Re * b.Re - a.Im * b.Im;
-            double imRes = a.Re * b.Im + a.Im * b.Re;
-            return new ComplexNumbers(reRes, imRes);
-        }
-
-        public static ComplexNumbers operator /(ComplexNumbers a, ComplexNumbers b)
-        {
-            var divOpp = new ComplexNumbers(b.Re, -b.Im);
-            var numerator = a * divOpp;
-            var temp = b * divOpp;
-            double denominator = temp.Re;
-            double reRes = numerator.Re / denominator;
-            double imRes = numerator.Im / denominator;
             return new ComplexNumbers(reRes, imRes);
         }
     }
